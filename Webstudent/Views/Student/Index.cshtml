@@ -1,0 +1,245 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<!-- Header -->
+<header class="w3-container w3-red w3-center" style="padding:38px 16px">
+    <h1 class="w3-margin w3-jumbo">WELLCOME</h1>
+    <p class="w3-xlarge">Web Studnet Template</p>
+    <button class="w3-button w3-black w3-padding-large w3-large w3-margin-top" id="btn_insert">Get Student</button>
+</header>
+<br />
+<div class="container">
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Birth</th>
+                    <th>Address</th>
+                    <th>Tel</th>
+                    <th>Date_star</th>
+                    <th>Date_End</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+
+            </thead>
+            <tbody id="addData">
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<!-- Modal update-->
+<div class="modal fade" id="studentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Student</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>ID</label>
+                <input id="modal_id" type="text" class="form-control" readonly />
+
+                <label>Name</label>
+                <input id="modal_name" type="text" class="form-control" />
+
+                <label>Birth</label>
+                <input id="modal_birth" type="text" class="form-control" />
+
+                <label>Address</label>
+                <input id="modal_address" type="text" class="form-control" />
+
+                <label>Tel</label>
+                <input id="modal_Tel" type="text" class="form-control" />
+
+                <label>Date_Start</label>
+                <input id="modal_start" type="text" class="form-control" />
+
+                <label>Date_End</label>
+                <input id="modal_end" type="text" class="form-control" />
+            </div>
+            <div class="modal-footer">
+
+                <button onclick="SaveEdit()" type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal insert -->
+<div class="modal fade" id="insertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">insert Student</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <label>Name</label>
+                <input id="insert_name" type="text" class="form-control" />
+
+                <label>Birth</label>
+                <input id="insert_birth" type="text" class="form-control" />
+
+                <label>Address</label>
+                <input id="insert_address" type="text" class="form-control" />
+
+                <label>Tel</label>
+                <input id="insert_Tel" type="text" class="form-control" />
+
+                <label>Date_Start</label>
+                <input id="insert_start" type="text" class="form-control" />
+
+                <label>Date_End</label>
+                <input id="insert_end" type="text" class="form-control" />
+            </div>
+            <div class="modal-footer">
+
+                <button onclick="Saveinsert()" type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="w3-container w3-black w3-center w3-opacity w3-padding-64">
+    <h1 class="w3-margin w3-xlarge">Good Luck</h1>
+</div>
+
+<!-- Footer -->
+<footer class="w3-container w3-padding-64 w3-center w3-opacity">
+    <p>Powered by</p>
+</footer>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/popper.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        GetStudentData();
+    });
+
+    function GetStudentData() {
+        $("#addData").empty()
+        $.getJSON("@Url.Action("AllStudent", "Student")", {}, function (item) {
+            var student_data = ''
+            $.each(item, function (index, data) {
+                student_data += '<tr>'
+                student_data += '<td>' + data.ID + '</td>'
+                student_data += '<td>' + data.Name + '</td>'
+                student_data += '<td>' + data.Birth + '</td>'
+                student_data += '<td>' + data.Address + '</td>'
+                student_data += '<td>' + data.Tel + '</td>'
+                student_data += '<td>' + data.Date_star + '</td>'
+                student_data += '<td>' + data.Date_End + '</td>'
+
+                student_data += '<td>' +'<button onclick="getEditData('+data.ID+')" class="btn btn-primary">แก้ไข</button>'+ '</td>'
+                student_data += '<td>' +'<button onclick="DeleteData('+data.ID+')" class="btn btn-danger">ลบ</button>'+'</td>'
+
+                student_data += '</tr>'
+            })
+            $("#addData").append(student_data)
+        })
+    }
+
+
+      function getEditData(id) {
+          $('#studentModal').modal('show');
+          $.getJSON("@Url.Action("getEditData", "Student")", { id:id} , function (item) {
+
+              $.each(item, function (index, data) {
+                  $("#modal_id").val(data.ID)
+                  $("#modal_name").val(data.Name)
+                  $("#modal_birth").val(data.Birth)
+                  $("#modal_address").val(data.Address)
+                  $("#modal_Tel").val(data.Tel)
+                  $("#modal_start").val(data.Date_star)
+                  $("#modal_end").val(data.Date_End)
+
+            })
+
+        })
+    }
+
+    function SaveEdit() {
+        $.post("@Url.Action("EditStudent","Student")", {
+            Id : $("#modal_id").val(),
+            Name : $("#modal_name").val(),
+            Birth : $("#modal_birth").val(),
+            Address : $("#modal_address").val(),
+            Tel : $("#modal_Tel").val(),
+            Date_start : $("#modal_start").val(),
+            Date_End : $("#modal_end").val()
+        })
+            .done(function () {
+                alert('Edit Success')
+                 $('#studentModal').modal('hide');
+                GetStudentData()
+            })
+    }
+
+    function Saveinsert() {
+        if ($("#insert_name").val()=="") {
+            alert("กรุณากรอก ชื่อ")
+        }
+        else if ($("#insert_birth").val()=="") {
+            alert("กรุณากรอก วันเดือนปีเกิด")
+        }
+        else {
+            $.post("@Url.Action("inserStudent","Student")", {
+            Name : $("#insert_name").val(),
+            Birth : $("#insert_birth").val(),
+            Address : $("#insert_address").val(),
+            Tel : $("#insert_Tel").val(),
+            Date_start : $("#insert_start").val(),
+            Date_End : $("#insert_end").val()
+            })
+                .done(function () {
+                    alert('inset Success')
+                    $('#insertModal').modal('hide');
+                    GetStudentData()
+                })
+            }
+    }
+
+    $("#btn_insert").click(function () {
+
+        $('#insertModal').modal('show');
+        $('input').val('');
+
+    })
+
+    function DeleteData(id) {
+        if (confirm("ต้องการลบใช้หรือไม่") == true) {
+            $.post("@Url.Action("deleteStudent","Student")", {
+                id: id
+            })
+                .done(function () {
+                    alert('delete Success')
+                    GetStudentData()
+                })
+        }
+        else {
+            return false;
+        }
+    }
+</script>
+
